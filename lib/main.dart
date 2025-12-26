@@ -34,6 +34,7 @@ import 'core/providers/instruction_injection_provider.dart';
 import 'core/providers/memory_provider.dart';
 import 'core/providers/backup_provider.dart';
 import 'core/providers/hotkey_provider.dart';
+import 'core/providers/local_model_provider.dart';
 import 'core/services/chat/chat_service.dart';
 // import 'core/services/mcp/mcp_tool_service.dart'; // MCP DISABLED
 import 'utils/sandbox_path_resolver.dart';
@@ -170,6 +171,8 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => MemoryProvider()),
         // Desktop hotkeys provider
         ChangeNotifierProvider(create: (_) => HotkeyProvider()),
+        // Local LLM models provider
+        ChangeNotifierProvider(create: (_) => LocalModelProvider()),
         ChangeNotifierProvider(
           create: (ctx) => BackupProvider(
             chatService: ctx.read<ChatService>(),

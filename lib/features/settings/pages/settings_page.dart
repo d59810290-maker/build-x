@@ -18,6 +18,7 @@ import '../../search/pages/search_services_page.dart';
 import '../../backup/pages/backup_page.dart';
 import '../../quick_phrase/pages/quick_phrases_page.dart';
 import '../../instruction_injection/pages/instruction_injection_page.dart';
+import '../../local_models/pages/local_models_page.dart';
 // import 'network_proxy_page.dart'; // Removed
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
@@ -177,27 +178,18 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 12),
           header(l10n.settingsPageModelsServicesSection),
           _iosSectionCard(children: [
-            // Default Model and Providers removed - using single model approach
-            // _iosNavRow(
-            //   context,
-            //   icon: Lucide.Heart,
-            //   label: l10n.settingsPageDefaultModel,
-            //   onTap: () {
-            //     Navigator.of(context).push(
-            //       MaterialPageRoute(builder: (_) => const DefaultModelPage()),
-            //     );
-            //   },
-            // ),
-            // _iosDivider(context),
-            // _iosNavRow(
-            //   context,
-            //   icon: Lucide.Boxes,
-            //   label: l10n.settingsPageProviders,
-            //   onTap: () {
-            //     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProvidersPage()));
-            //   },
-            // ),
-            // _iosDivider(context),
+            // Local Models - النماذج المحلية
+            _iosNavRow(
+              context,
+              icon: Lucide.Brain,
+              label: 'النماذج المحلية',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const LocalModelsPage()),
+                );
+              },
+            ),
+            _iosDivider(context),
             _iosNavRow(
               context,
               icon: Lucide.Earth,

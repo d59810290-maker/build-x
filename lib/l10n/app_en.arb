@@ -1352,5 +1352,88 @@
   "providerDetailPageBatchDetectStart": "Start Detection",
   "providerDetailPageDetectSuccess": "Detection successful",
   "providerDetailPageDetectFailed": "Detection failed",
-  "providerDetailPageDeleteAllModelsWarning": "This action cannot be undone."
+  "providerDetailPageDeleteAllModelsWarning": "This action cannot be undone.",
+  
+  "localModelsPageTitle": "Local Models",
+  "localModelsPageSearch": "Search for a model...",
+  "localModelsPageNoModels": "No matching models",
+  "localModelsPageClearFilters": "Clear filters",
+  "localModelsPageActiveModel": "Active Model",
+  "localModelsPageFilterAll": "All",
+  "localModelsPageFilterArabic": "Arabic Support",
+  "localModelsPageFilterLightweight": "Lightweight",
+  "localModelsPageFilterMultilingual": "Multilingual",
+  "localModelsPageFilterDownloaded": "Downloaded Only",
+  "localModelsPageDownload": "Download",
+  "localModelsPageDelete": "Delete",
+  "localModelsPageSelect": "Select",
+  "localModelsPageLoad": "Load",
+  "localModelsPageUnload": "Unload",
+  "localModelsPageActive": "Active",
+  "localModelsPageDownloaded": "Downloaded",
+  "localModelsPageDownloading": "Downloading...",
+  "localModelsPageDeleteConfirm": "Delete Model",
+  "localModelsPageDeleteMessage": "Are you sure you want to delete {modelName}?\nThe file will be removed from your device.",
+  "@localModelsPageDeleteMessage": {
+    "placeholders": {
+      "modelName": { "type": "String" }
+    }
+  },
+  "localModelsPageDownloadSuccess": "{modelName} downloaded successfully",
+  "@localModelsPageDownloadSuccess": {
+    "placeholders": {
+      "modelName": { "type": "String" }
+    }
+  },
+  "localModelsPageDownloadFailed": "Failed to download model: {error}",
+  "@localModelsPageDownloadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "localModelsPageLoadSuccess": "{modelName} loaded into memory",
+  "@localModelsPageLoadSuccess": {
+    "placeholders": {
+      "modelName": { "type": "String" }
+    }
+  },
+  "localModelsPageLoadFailed": "Failed to load model into memory",
+  "localModelsPageDeleted": "{modelName} deleted",
+  "@localModelsPageDeleted": {
+    "placeholders": {
+      "modelName": { "type": "String" }
+    }
+  },
+  
+  "localModelSettingsTitle": "Local Model Settings",
+  "localModelSettingsPerformance": "Performance",
+  "localModelSettingsContextLength": "Context Length",
+  "localModelSettingsContextLengthDesc": "Number of tokens in context",
+  "localModelSettingsMaxTokens": "Max Tokens",
+  "localModelSettingsMaxTokensDesc": "Maximum tokens in response",
+  "localModelSettingsThreads": "Threads",
+  "localModelSettingsThreadsDesc": "CPU threads to use",
+  "localModelSettingsUseGpu": "Use GPU",
+  "localModelSettingsUseGpuDesc": "Accelerate with graphics processor",
+  "localModelSettingsGpuLayers": "GPU Layers",
+  "localModelSettingsGpuLayersDesc": "Layers on GPU (0 = auto)",
+  "localModelSettingsGeneration": "Generation",
+  "localModelSettingsTemperature": "Temperature",
+  "localModelSettingsTemperatureDesc": "Control response randomness",
+  "localModelSettingsTopP": "Top P",
+  "localModelSettingsTopPDesc": "Cumulative probability for tokens",
+  "localModelSettingsTopK": "Top K",
+  "localModelSettingsTopKDesc": "Number of candidate tokens",
+  "localModelSettingsRepeatPenalty": "Repeat Penalty",
+  "localModelSettingsRepeatPenaltyDesc": "Reduce word repetition",
+  "localModelSettingsSystemPrompt": "System Prompt",
+  "localModelSettingsSystemPromptEn": "System Prompt (English)",
+  "localModelSettingsSystemPromptAr": "System Prompt (Arabic)",
+  "localModelSettingsStorage": "Storage",
+  "localModelSettingsUsedSpace": "Used Space",
+  "localModelSettingsCleanup": "Clean Unused Files",
+  "localModelSettingsCleanupDesc": "Delete corrupted model files",
+  "localModelSettingsReset": "Reset Settings",
+  "localModelSettingsSaved": "Settings saved",
+  "localModelSettingsCleaned": "Cleanup complete"
 }
