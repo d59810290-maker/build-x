@@ -119,6 +119,11 @@ dependencies:
   
   # Environment
   flutter_dotenv: ^5.1.0
+  
+  # Local LLM Inference (for running AI models locally on device)
+  # Note: flutter_llama requires native compilation for Android/iOS
+  # Uncomment when ready to enable real local inference:
+  # flutter_llama: ^1.1.2
 
 dev_dependencies:
   flutter_test:
