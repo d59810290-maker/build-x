@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.8.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -59,7 +59,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   
   # Markdown & Content
-  gpt_markdown: ^1.1.4
+  gpt_markdown: ^1.1.2
   html: ^0.15.6
   html2md: ^1.2.10
   flutter_highlight: ^0.7.0
@@ -119,6 +119,13 @@ dependencies:
   
   # Environment
   flutter_dotenv: ^5.1.0
+  desktop_drop: ^0.7.0
+  firebase_messaging: ^15.2.10
+  syncfusion_flutter_pdf: ^31.1.19
+  syncfusion_flutter_sliders: ^31.1.19
+  syncfusion_flutter_core: ^31.1.19
+  webview_windows: ^0.4.0
+  mcp_client: ^1.0.2
   
   # Local LLM Inference (for running AI models locally on device)
   # Note: flutter_llama requires native compilation for Android/iOS

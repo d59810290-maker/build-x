@@ -8,8 +8,10 @@ import '../../../core/models/conversation.dart';
 import '../../../core/models/chat_stream_chunk.dart';
 import '../../../core/providers/assistant_provider.dart';
 import '../../../core/providers/settings_provider.dart';
+import '../../../core/providers/local_model_provider.dart';
 import '../../../core/services/api/chat_api_service.dart';
 import '../../../core/services/chat/chat_service.dart';
+import '../../../core/services/local_llm/local_api_service.dart';
 import '../../../utils/assistant_regex.dart';
 import '../../../core/models/assistant_regex.dart';
 import '../../../utils/markdown_media_sanitizer.dart';
@@ -432,15 +434,32 @@ class ChatActions {
     final conversationId = state.conversationId;
 
     try {
-      final streamFuture = ChatApiService.sendMessageStream(
-        config: ctx.config,
-        modelId: ctx.modelId,
-        prompt: ctx.apiMessages.isNotEmpty ? ctx.apiMessages.last['content'] ?? '' : '',
-        messages: ctx.apiMessages,
-      );
+      // التحقق من وجود نموذج محلي محمل
+      final localApi = LocalApiService.instance;
+      final useLocalModel = localApi.isAvailable;
+      
+      Stream<String> stream;
+      
+      if (useLocalModel) {
+        // استخدام النموذج المحلي
+        final prompt = ctx.apiMessages.isNotEmpty ? ctx.apiMessages.last['content'] ?? '' : '';
+        stream = await localApi.sendMessageStream(
+          prompt: prompt,
+          messages: ctx.apiMessages,
+          systemPrompt: assistant?.systemPrompt,
+        );
+      } else {
+        // استخدام API الخارجي
+        final streamFuture = ChatApiService.sendMessageStream(
+          config: ctx.config,
+          modelId: ctx.modelId,
+          prompt: ctx.apiMessages.isNotEmpty ? ctx.apiMessages.last['content'] ?? '' : '',
+          messages: ctx.apiMessages,
+        );
+        stream = await streamFuture;
+      }
 
       await _conversationStreams[conversationId]?.cancel();
-      final stream = await streamFuture;
       final sub = stream.listen(
         (chunk) => _handleStreamChunk(ChatStreamChunk(content: chunk), state),
         onError: (e) => _handleStreamError(e, state),
