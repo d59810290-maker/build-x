@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../services/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -9,7 +9,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -29,86 +28,54 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _signUp() async {
     setState(() => _errorMessage = null);
 
-    // Validate inputs
     final email = _emailController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
     if (email.isEmpty) {
-      setState(() => _errorMessage = 'Please enter an email address');
+      setState(() => _errorMessage = 'الرجاء إدخال البريد الإلكتروني');
       return;
     }
 
     if (!email.contains('@')) {
-      setState(() => _errorMessage = 'Please enter a valid email address');
+      setState(() => _errorMessage = 'الرجاء إدخال بريد إلكتروني صالح');
       return;
     }
 
     if (password.isEmpty) {
-      setState(() => _errorMessage = 'Please enter a password');
+      setState(() => _errorMessage = 'الرجاء إدخال كلمة المرور');
       return;
     }
 
     if (password.length < 6) {
-      setState(() => _errorMessage = 'Password must be at least 6 characters');
+      setState(() => _errorMessage = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل');
       return;
     }
 
     if (password != confirmPassword) {
-      setState(() => _errorMessage = 'Passwords do not match');
+      setState(() => _errorMessage = 'كلمات المرور غير متطابقة');
       return;
     }
 
     setState(() => _isLoading = true);
 
-    try {
-      await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+    final result = await AuthService.signUpWithEmail(email, password);
+    
+    if (!mounted) return;
+    
+    if (result.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تم إرسال رابط التحقق إلى بريدك الإلكتروني'),
+          duration: Duration(seconds: 4),
+        ),
       );
-
-      // Send verification email
-      final user = _auth.currentUser;
-      if (user != null && !user.emailVerified) {
-        try {
-          await user.sendEmailVerification();
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Verification email sent. Please check your email to verify your account.'),
-                duration: Duration(seconds: 4),
-              ),
-            );
-          }
-        } catch (e) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to send verification email: $e')),
-            );
-          }
-        }
-      }
-
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-    } on FirebaseAuthException catch (e) {
-      String message = 'Sign up failed';
-      if (e.code == 'weak-password') {
-        message = 'Password is too weak';
-      } else if (e.code == 'email-already-in-use') {
-        message = 'Email is already in use';
-      } else if (e.code == 'invalid-email') {
-        message = 'Email is invalid';
-      }
-      setState(() => _errorMessage = message);
-    } catch (e) {
-      setState(() => _errorMessage = 'Sign up failed: $e');
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else {
+      setState(() => _errorMessage = result.errorMessage);
     }
+    
+    setState(() => _isLoading = false);
   }
 
   @override

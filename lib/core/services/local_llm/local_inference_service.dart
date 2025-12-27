@@ -281,120 +281,239 @@ String _generateSmartResponse(
   LocalLLMSettings settings,
 ) {
   final isArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(prompt);
-  final promptLower = prompt.toLowerCase();
+  final promptLower = prompt.toLowerCase().trim();
+  final promptAr = prompt.trim();
   
-  // تحليل نوع السؤال
+  // ===== الاستجابات العربية =====
   if (isArabic) {
-    // أسئلة التحية
-    if (prompt.contains('مرحبا') || prompt.contains('السلام') || prompt.contains('أهلا')) {
-      return 'مرحباً بك! أنا مساعدك الذكي الذي يعمل محلياً على جهازك. كيف يمكنني مساعدتك اليوم؟';
+    // تحيات
+    if (_matchesAny(promptAr, ['مرحبا', 'السلام', 'أهلا', 'هلا', 'صباح', 'مساء'])) {
+      return 'مرحباً بك! 👋 أنا مساعدك الذكي BuildX. كيف يمكنني مساعدتك اليوم؟';
     }
     
-    // أسئلة عن الهوية
-    if (prompt.contains('من أنت') || prompt.contains('ما اسمك')) {
-      return 'أنا نموذج ذكاء اصطناعي يعمل محلياً على جهازك. أستطيع مساعدتك في الإجابة على الأسئلة، كتابة النصوص، والمحادثة بالعربية والإنجليزية. جميع بياناتك تبقى على جهازك ولا تُرسل لأي خادم خارجي.';
-    }
-    
-    // أسئلة عن القدرات
-    if (prompt.contains('ماذا تستطيع') || prompt.contains('ما الذي يمكنك')) {
-      return '''يمكنني مساعدتك في العديد من المهام:
+    // الهوية
+    if (_matchesAny(promptAr, ['من أنت', 'ما اسمك', 'عرفني بنفسك', 'اسمك ايش', 'شو اسمك'])) {
+      return '''أنا **BuildX** 🤖 - مساعدك الذكي!
 
-• الإجابة على الأسئلة العامة
-• كتابة وتحرير النصوص
+أعمل محلياً على جهازك مما يعني:
+• 🔒 خصوصية تامة - بياناتك لا تغادر جهازك
+• ⚡ سرعة عالية - لا حاجة للإنترنت
+• 🌍 دعم العربية والإنجليزية
+
+كيف يمكنني مساعدتك؟''';
+    }
+    
+    // القدرات
+    if (_matchesAny(promptAr, ['ماذا تستطيع', 'ما الذي يمكنك', 'شو تقدر', 'ايش تسوي', 'قدراتك'])) {
+      return '''يمكنني مساعدتك في:
+
+📝 **الكتابة والتحرير**
+• كتابة مقالات ورسائل
+• تصحيح الأخطاء اللغوية
+• تلخيص النصوص
+
+💻 **البرمجة**
+• كتابة وشرح الكود
+• حل المشاكل البرمجية
+• شرح المفاهيم التقنية
+
+🌐 **الترجمة**
 • الترجمة بين اللغات
-• شرح المفاهيم المعقدة
-• المساعدة في البرمجة
-• إنشاء محتوى إبداعي
+• شرح المصطلحات
 
-كل هذا يعمل محلياً على جهازك بدون الحاجة للإنترنت!''';
+🧮 **الحسابات**
+• العمليات الحسابية
+• حل المسائل الرياضية
+
+جرب أي شيء! 🚀''';
     }
     
-    // أسئلة عن الوقت
-    if (prompt.contains('الوقت') || prompt.contains('الساعة') || prompt.contains('التاريخ')) {
+    // الوقت والتاريخ
+    if (_matchesAny(promptAr, ['الوقت', 'الساعة', 'التاريخ', 'كم الساعة', 'اليوم'])) {
       final now = DateTime.now();
-      return 'الوقت الحالي هو ${now.hour}:${now.minute.toString().padLeft(2, '0')} والتاريخ هو ${now.day}/${now.month}/${now.year}.';
+      final days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      return '''⏰ **الوقت الحالي:** ${now.hour}:${now.minute.toString().padLeft(2, '0')}
+📅 **التاريخ:** ${now.day}/${now.month}/${now.year}
+📆 **اليوم:** ${days[now.weekday % 7]}''';
     }
     
-    // أسئلة حسابية بسيطة
-    final mathMatch = RegExp(r'(\d+)\s*[\+\-\*\/x×÷]\s*(\d+)').firstMatch(prompt);
-    if (mathMatch != null || prompt.contains('احسب') || prompt.contains('كم')) {
-      if (mathMatch != null) {
-        final a = int.tryParse(mathMatch.group(1) ?? '0') ?? 0;
-        final b = int.tryParse(mathMatch.group(2) ?? '0') ?? 0;
-        final op = prompt.contains('+') ? '+' : prompt.contains('-') ? '-' : prompt.contains('*') || prompt.contains('×') || prompt.contains('x') ? '×' : '÷';
-        int result;
-        switch (op) {
-          case '+': result = a + b; break;
-          case '-': result = a - b; break;
-          case '×': result = a * b; break;
-          case '÷': result = b != 0 ? a ~/ b : 0; break;
-          default: result = 0;
-        }
-        return 'النتيجة هي: $a $op $b = $result';
-      }
+    // الشكر
+    if (_matchesAny(promptAr, ['شكرا', 'شكراً', 'مشكور', 'يعطيك العافية'])) {
+      return 'العفو! 😊 سعيد بمساعدتك. هل تحتاج أي شيء آخر؟';
     }
     
-    // استجابة افتراضية للعربية
-    return '''شكراً على سؤالك! أنا نموذج ذكاء اصطناعي يعمل محلياً على جهازك.
+    // الوداع
+    if (_matchesAny(promptAr, ['مع السلامة', 'باي', 'وداعا', 'الى اللقاء'])) {
+      return 'مع السلامة! 👋 أتمنى لك يوماً سعيداً. أراك قريباً!';
+    }
+    
+    // أسئلة حسابية
+    final mathResult = _calculateMath(prompt);
+    if (mathResult != null) {
+      return '🧮 **النتيجة:** $mathResult';
+    }
+    
+    // أسئلة البرمجة
+    if (_matchesAny(promptAr, ['كود', 'برمجة', 'برنامج', 'دالة', 'فنكشن'])) {
+      return '''أستطيع مساعدتك في البرمجة! 💻
 
-بخصوص سؤالك: "$prompt"
+أخبرني:
+• ما هي لغة البرمجة؟
+• ما الذي تريد تحقيقه؟
+• هل لديك كود تريد مراجعته؟
 
-أستطيع مساعدتك بشكل أفضل عندما يتم تفعيل الاستدلال الكامل. حالياً أعمل في وضع المحاكاة الذكية.
+سأساعدك بأفضل طريقة ممكنة!''';
+    }
+    
+    // استجابة افتراضية ذكية
+    return '''شكراً على سؤالك! 🤔
 
-💡 **نصيحة:** لتجربة أفضل، تأكد من تحميل نموذج يدعم العربية مثل Qwen 2.5.''';
+بخصوص: "$promptAr"
+
+أنا أعمل حالياً في وضع المحاكاة الذكية. للحصول على إجابات أكثر دقة:
+
+1. 📥 قم بتحميل نموذج AI من الإعدادات
+2. 🎯 جرب نماذج مثل Qwen 2.5 للعربية
+3. ⚡ النماذج الأصغر أسرع في الاستجابة
+
+هل يمكنني مساعدتك بشيء آخر؟''';
   }
   
-  // English responses
-  if (promptLower.contains('hello') || promptLower.contains('hi ') || promptLower.contains('hey')) {
-    return 'Hello! I\'m your local AI assistant running directly on your device. How can I help you today?';
+  // ===== English Responses =====
+  
+  // Greetings
+  if (_matchesAny(promptLower, ['hello', 'hi', 'hey', 'good morning', 'good evening'])) {
+    return 'Hello! 👋 I\'m BuildX, your AI assistant. How can I help you today?';
   }
   
-  if (promptLower.contains('who are you') || promptLower.contains('what are you')) {
-    return 'I\'m a local AI model running on your device. I can help you with questions, writing, and conversations. All your data stays private on your device.';
-  }
-  
-  if (promptLower.contains('what can you do') || promptLower.contains('help me')) {
-    return '''I can help you with many tasks:
+  // Identity
+  if (_matchesAny(promptLower, ['who are you', 'what are you', 'your name', 'introduce yourself'])) {
+    return '''I'm **BuildX** 🤖 - Your Smart AI Assistant!
 
-• Answering general questions
-• Writing and editing text
-• Translation between languages
-• Explaining complex concepts
-• Coding assistance
-• Creative content generation
+I run locally on your device, which means:
+• 🔒 Complete privacy - your data never leaves your device
+• ⚡ Fast responses - no internet needed
+• 🌍 Support for Arabic and English
 
-All running locally on your device without internet!''';
+How can I assist you?''';
   }
   
-  // Time/date questions
-  if (promptLower.contains('time') || promptLower.contains('date')) {
+  // Capabilities
+  if (_matchesAny(promptLower, ['what can you do', 'help me', 'capabilities', 'features'])) {
+    return '''I can help you with:
+
+📝 **Writing & Editing**
+• Write articles and emails
+• Fix grammar and spelling
+• Summarize texts
+
+💻 **Programming**
+• Write and explain code
+• Debug issues
+• Explain technical concepts
+
+🌐 **Translation**
+• Translate between languages
+• Explain terminology
+
+🧮 **Calculations**
+• Math operations
+• Problem solving
+
+Try anything! 🚀''';
+  }
+  
+  // Time/Date
+  if (_matchesAny(promptLower, ['time', 'date', 'what day', 'today'])) {
     final now = DateTime.now();
-    return 'The current time is ${now.hour}:${now.minute.toString().padLeft(2, '0')} and the date is ${now.month}/${now.day}/${now.year}.';
+    final days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return '''⏰ **Current Time:** ${now.hour}:${now.minute.toString().padLeft(2, '0')}
+📅 **Date:** ${now.month}/${now.day}/${now.year}
+📆 **Day:** ${days[now.weekday % 7]}''';
   }
   
-  // Math questions
-  final mathMatch = RegExp(r'(\d+)\s*[\+\-\*\/x×÷]\s*(\d+)').firstMatch(prompt);
-  if (mathMatch != null) {
-    final a = int.tryParse(mathMatch.group(1) ?? '0') ?? 0;
-    final b = int.tryParse(mathMatch.group(2) ?? '0') ?? 0;
-    final op = prompt.contains('+') ? '+' : prompt.contains('-') ? '-' : prompt.contains('*') || prompt.contains('×') || prompt.contains('x') ? '×' : '÷';
-    int result;
-    switch (op) {
-      case '+': result = a + b; break;
-      case '-': result = a - b; break;
-      case '×': result = a * b; break;
-      case '÷': result = b != 0 ? a ~/ b : 0; break;
-      default: result = 0;
+  // Thanks
+  if (_matchesAny(promptLower, ['thank', 'thanks', 'appreciate'])) {
+    return 'You\'re welcome! 😊 Happy to help. Need anything else?';
+  }
+  
+  // Goodbye
+  if (_matchesAny(promptLower, ['bye', 'goodbye', 'see you', 'later'])) {
+    return 'Goodbye! 👋 Have a great day. See you soon!';
+  }
+  
+  // Math
+  final mathResult = _calculateMath(prompt);
+  if (mathResult != null) {
+    return '🧮 **Result:** $mathResult';
+  }
+  
+  // Programming
+  if (_matchesAny(promptLower, ['code', 'program', 'function', 'script', 'debug'])) {
+    return '''I can help with programming! 💻
+
+Tell me:
+• What programming language?
+• What do you want to achieve?
+• Do you have code to review?
+
+I'll help you the best I can!''';
+  }
+  
+  // Default smart response
+  return '''Thanks for your question! 🤔
+
+Regarding: "$prompt"
+
+I'm currently running in smart simulation mode. For more accurate answers:
+
+1. 📥 Download an AI model from Settings
+2. 🎯 Try models like Llama 3.2 or Qwen 2.5
+3. ⚡ Smaller models respond faster
+
+Can I help you with something else?''';
+}
+
+/// التحقق من تطابق أي من الكلمات المفتاحية
+bool _matchesAny(String text, List<String> keywords) {
+  final lower = text.toLowerCase();
+  return keywords.any((k) => lower.contains(k.toLowerCase()));
+}
+
+/// حساب العمليات الرياضية
+String? _calculateMath(String prompt) {
+  // البحث عن عمليات حسابية بسيطة
+  final patterns = [
+    RegExp(r'(\d+(?:\.\d+)?)\s*[\+]\s*(\d+(?:\.\d+)?)'),
+    RegExp(r'(\d+(?:\.\d+)?)\s*[\-]\s*(\d+(?:\.\d+)?)'),
+    RegExp(r'(\d+(?:\.\d+)?)\s*[\*×x]\s*(\d+(?:\.\d+)?)'),
+    RegExp(r'(\d+(?:\.\d+)?)\s*[\/÷]\s*(\d+(?:\.\d+)?)'),
+  ];
+  
+  for (int i = 0; i < patterns.length; i++) {
+    final match = patterns[i].firstMatch(prompt);
+    if (match != null) {
+      final a = double.tryParse(match.group(1) ?? '0') ?? 0;
+      final b = double.tryParse(match.group(2) ?? '0') ?? 0;
+      double result;
+      String op;
+      
+      switch (i) {
+        case 0: result = a + b; op = '+'; break;
+        case 1: result = a - b; op = '-'; break;
+        case 2: result = a * b; op = '×'; break;
+        case 3: result = b != 0 ? a / b : 0; op = '÷'; break;
+        default: return null;
+      }
+      
+      // تنسيق النتيجة
+      final resultStr = result == result.toInt() 
+          ? result.toInt().toString() 
+          : result.toStringAsFixed(2);
+      
+      return '$a $op $b = $resultStr';
     }
-    return 'The result is: $a $op $b = $result';
   }
   
-  // Default English response
-  return '''Thank you for your question! I'm a local AI model running on your device.
-
-Regarding your question: "$prompt"
-
-I can provide better assistance when full inference is enabled. Currently running in smart simulation mode.
-
-💡 **Tip:** For the best experience, make sure to download a model that supports your language.''';
+  return null;
 }

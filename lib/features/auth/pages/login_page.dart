@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'signup_page.dart';
 import 'forgot_password_page.dart';
+import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,14 +12,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
   String? _errorMessage;
-  bool _useEmailMode = false; // Toggle between Google and email login
+  bool _useEmailMode = false;
 
   @override
   void dispose() {
@@ -30,44 +27,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _signInWithGoogle() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      
-      // Verify that authentication tokens are not null
-      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
-        if (mounted) {
-          setState(() => _errorMessage = 'Firebase authentication failed: Missing credentials');
-        }
-        return;
-      }
-      
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await _auth.signInWithCredential(credential);
-      
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _errorMessage = 'Sign in failed: $e');
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+    final result = await AuthService.signInWithGoogle();
+    
+    if (!mounted) return;
+    
+    if (result.success) {
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else if (result.errorCode != 'cancelled') {
+      setState(() => _errorMessage = result.errorMessage);
     }
+    
+    setState(() => _isLoading = false);
   }
 
   Future<void> _signInWithEmail() async {
@@ -77,43 +52,47 @@ class _LoginPageState extends State<LoginPage> {
     final password = _passwordController.text;
 
     if (email.isEmpty) {
-      setState(() => _errorMessage = 'Please enter an email address');
+      setState(() => _errorMessage = 'الرجاء إدخال البريد الإلكتروني');
       return;
     }
 
     if (password.isEmpty) {
-      setState(() => _errorMessage = 'Please enter a password');
+      setState(() => _errorMessage = 'الرجاء إدخال كلمة المرور');
       return;
     }
 
     setState(() => _isLoading = true);
 
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-    } on FirebaseAuthException catch (e) {
-      String message = 'Sign in failed';
-      if (e.code == 'user-not-found') {
-        message = 'Email not found';
-      } else if (e.code == 'wrong-password') {
-        message = 'Incorrect password';
-      } else if (e.code == 'invalid-email') {
-        message = 'Invalid email address';
-      }
-      setState(() => _errorMessage = message);
-    } catch (e) {
-      setState(() => _errorMessage = 'Sign in failed: $e');
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+    final result = await AuthService.signInWithEmail(email, password);
+    
+    if (!mounted) return;
+    
+    if (result.success) {
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else {
+      setState(() => _errorMessage = result.errorMessage);
     }
+    
+    setState(() => _isLoading = false);
+  }
+  
+  Future<void> _signInAsGuest() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    
+    final result = await AuthService.signInAnonymously();
+    
+    if (!mounted) return;
+    
+    if (result.success) {
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else {
+      setState(() => _errorMessage = result.errorMessage);
+    }
+    
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -263,6 +242,48 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
+                  
+                  const SizedBox(height: 14),
+                  
+                  // Continue as Guest button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: TextButton(
+                      onPressed: _isLoading ? null : _signInAsGuest,
+                      style: TextButton.styleFrom(
+                        foregroundColor: const Color(0xFFFFFFFF).withOpacity(0.7),
+                      ),
+                      child: const Text(
+                        'Continue as Guest',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  // Error message
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEBEE).withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _errorMessage!,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFFC62828),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ],
                 ),
               ),

@@ -3292,6 +3292,186 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get providerDetailPageDeleteAllModelsWarning => '此操作不可撤回';
+
+  @override
+  String get localModelsPageTitle => 'Local Models';
+
+  @override
+  String get localModelsPageSearch => 'Search for a model...';
+
+  @override
+  String get localModelsPageNoModels => 'No matching models';
+
+  @override
+  String get localModelsPageClearFilters => 'Clear filters';
+
+  @override
+  String get localModelsPageActiveModel => 'Active Model';
+
+  @override
+  String get localModelsPageFilterAll => 'All';
+
+  @override
+  String get localModelsPageFilterArabic => 'Arabic Support';
+
+  @override
+  String get localModelsPageFilterLightweight => 'Lightweight';
+
+  @override
+  String get localModelsPageFilterMultilingual => 'Multilingual';
+
+  @override
+  String get localModelsPageFilterDownloaded => 'Downloaded Only';
+
+  @override
+  String get localModelsPageDownload => 'Download';
+
+  @override
+  String get localModelsPageDelete => 'Delete';
+
+  @override
+  String get localModelsPageSelect => 'Select';
+
+  @override
+  String get localModelsPageLoad => 'Load';
+
+  @override
+  String get localModelsPageUnload => 'Unload';
+
+  @override
+  String get localModelsPageActive => 'Active';
+
+  @override
+  String get localModelsPageDownloaded => 'Downloaded';
+
+  @override
+  String get localModelsPageDownloading => 'Downloading...';
+
+  @override
+  String get localModelsPageDeleteConfirm => 'Delete Model';
+
+  @override
+  String localModelsPageDeleteMessage(String modelName) {
+    return 'Are you sure you want to delete $modelName?\nThe file will be removed from your device.';
+  }
+
+  @override
+  String localModelsPageDownloadSuccess(String modelName) {
+    return '$modelName downloaded successfully';
+  }
+
+  @override
+  String localModelsPageDownloadFailed(String error) {
+    return 'Failed to download model: $error';
+  }
+
+  @override
+  String localModelsPageLoadSuccess(String modelName) {
+    return '$modelName loaded into memory';
+  }
+
+  @override
+  String get localModelsPageLoadFailed => 'Failed to load model into memory';
+
+  @override
+  String localModelsPageDeleted(String modelName) {
+    return '$modelName deleted';
+  }
+
+  @override
+  String get localModelSettingsTitle => 'Local Model Settings';
+
+  @override
+  String get localModelSettingsPerformance => 'Performance';
+
+  @override
+  String get localModelSettingsContextLength => 'Context Length';
+
+  @override
+  String get localModelSettingsContextLengthDesc =>
+      'Number of tokens in context';
+
+  @override
+  String get localModelSettingsMaxTokens => 'Max Tokens';
+
+  @override
+  String get localModelSettingsMaxTokensDesc => 'Maximum tokens in response';
+
+  @override
+  String get localModelSettingsThreads => 'Threads';
+
+  @override
+  String get localModelSettingsThreadsDesc => 'CPU threads to use';
+
+  @override
+  String get localModelSettingsUseGpu => 'Use GPU';
+
+  @override
+  String get localModelSettingsUseGpuDesc =>
+      'Accelerate with graphics processor';
+
+  @override
+  String get localModelSettingsGpuLayers => 'GPU Layers';
+
+  @override
+  String get localModelSettingsGpuLayersDesc => 'Layers on GPU (0 = auto)';
+
+  @override
+  String get localModelSettingsGeneration => 'Generation';
+
+  @override
+  String get localModelSettingsTemperature => 'Temperature';
+
+  @override
+  String get localModelSettingsTemperatureDesc => 'Control response randomness';
+
+  @override
+  String get localModelSettingsTopP => 'Top P';
+
+  @override
+  String get localModelSettingsTopPDesc => 'Cumulative probability for tokens';
+
+  @override
+  String get localModelSettingsTopK => 'Top K';
+
+  @override
+  String get localModelSettingsTopKDesc => 'Number of candidate tokens';
+
+  @override
+  String get localModelSettingsRepeatPenalty => 'Repeat Penalty';
+
+  @override
+  String get localModelSettingsRepeatPenaltyDesc => 'Reduce word repetition';
+
+  @override
+  String get localModelSettingsSystemPrompt => 'System Prompt';
+
+  @override
+  String get localModelSettingsSystemPromptEn => 'System Prompt (English)';
+
+  @override
+  String get localModelSettingsSystemPromptAr => 'System Prompt (Arabic)';
+
+  @override
+  String get localModelSettingsStorage => 'Storage';
+
+  @override
+  String get localModelSettingsUsedSpace => 'Used Space';
+
+  @override
+  String get localModelSettingsCleanup => 'Clean Unused Files';
+
+  @override
+  String get localModelSettingsCleanupDesc => 'Delete corrupted model files';
+
+  @override
+  String get localModelSettingsReset => 'Reset Settings';
+
+  @override
+  String get localModelSettingsSaved => 'Settings saved';
+
+  @override
+  String get localModelSettingsCleaned => 'Cleanup complete';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).

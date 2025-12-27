@@ -6460,6 +6460,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This action cannot be undone.'**
   String get providerDetailPageDeleteAllModelsWarning;
+
+  /// No description provided for @localModelsPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Models'**
+  String get localModelsPageTitle;
+
+  /// No description provided for @localModelsPageSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a model...'**
+  String get localModelsPageSearch;
+
+  /// No description provided for @localModelsPageNoModels.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching models'**
+  String get localModelsPageNoModels;
+
+  /// No description provided for @localModelsPageClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get localModelsPageClearFilters;
+
+  /// No description provided for @localModelsPageActiveModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Model'**
+  String get localModelsPageActiveModel;
+
+  /// No description provided for @localModelsPageFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get localModelsPageFilterAll;
+
+  /// No description provided for @localModelsPageFilterArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic Support'**
+  String get localModelsPageFilterArabic;
+
+  /// No description provided for @localModelsPageFilterLightweight.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightweight'**
+  String get localModelsPageFilterLightweight;
+
+  /// No description provided for @localModelsPageFilterMultilingual.
+  ///
+  /// In en, this message translates to:
+  /// **'Multilingual'**
+  String get localModelsPageFilterMultilingual;
+
+  /// No description provided for @localModelsPageFilterDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded Only'**
+  String get localModelsPageFilterDownloaded;
+
+  /// No description provided for @localModelsPageDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get localModelsPageDownload;
+
+  /// No description provided for @localModelsPageDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get localModelsPageDelete;
+
+  /// No description provided for @localModelsPageSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get localModelsPageSelect;
+
+  /// No description provided for @localModelsPageLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Load'**
+  String get localModelsPageLoad;
+
+  /// No description provided for @localModelsPageUnload.
+  ///
+  /// In en, this message translates to:
+  /// **'Unload'**
+  String get localModelsPageUnload;
+
+  /// No description provided for @localModelsPageActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get localModelsPageActive;
+
+  /// No description provided for @localModelsPageDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded'**
+  String get localModelsPageDownloaded;
+
+  /// No description provided for @localModelsPageDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading...'**
+  String get localModelsPageDownloading;
+
+  /// No description provided for @localModelsPageDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Model'**
+  String get localModelsPageDeleteConfirm;
+
+  /// No description provided for @localModelsPageDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {modelName}?\nThe file will be removed from your device.'**
+  String localModelsPageDeleteMessage(String modelName);
+
+  /// No description provided for @localModelsPageDownloadSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{modelName} downloaded successfully'**
+  String localModelsPageDownloadSuccess(String modelName);
+
+  /// No description provided for @localModelsPageDownloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to download model: {error}'**
+  String localModelsPageDownloadFailed(String error);
+
+  /// No description provided for @localModelsPageLoadSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{modelName} loaded into memory'**
+  String localModelsPageLoadSuccess(String modelName);
+
+  /// No description provided for @localModelsPageLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load model into memory'**
+  String get localModelsPageLoadFailed;
+
+  /// No description provided for @localModelsPageDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{modelName} deleted'**
+  String localModelsPageDeleted(String modelName);
+
+  /// No description provided for @localModelSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Model Settings'**
+  String get localModelSettingsTitle;
+
+  /// No description provided for @localModelSettingsPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get localModelSettingsPerformance;
+
+  /// No description provided for @localModelSettingsContextLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Context Length'**
+  String get localModelSettingsContextLength;
+
+  /// No description provided for @localModelSettingsContextLengthDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of tokens in context'**
+  String get localModelSettingsContextLengthDesc;
+
+  /// No description provided for @localModelSettingsMaxTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Tokens'**
+  String get localModelSettingsMaxTokens;
+
+  /// No description provided for @localModelSettingsMaxTokensDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum tokens in response'**
+  String get localModelSettingsMaxTokensDesc;
+
+  /// No description provided for @localModelSettingsThreads.
+  ///
+  /// In en, this message translates to:
+  /// **'Threads'**
+  String get localModelSettingsThreads;
+
+  /// No description provided for @localModelSettingsThreadsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'CPU threads to use'**
+  String get localModelSettingsThreadsDesc;
+
+  /// No description provided for @localModelSettingsUseGpu.
+  ///
+  /// In en, this message translates to:
+  /// **'Use GPU'**
+  String get localModelSettingsUseGpu;
+
+  /// No description provided for @localModelSettingsUseGpuDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Accelerate with graphics processor'**
+  String get localModelSettingsUseGpuDesc;
+
+  /// No description provided for @localModelSettingsGpuLayers.
+  ///
+  /// In en, this message translates to:
+  /// **'GPU Layers'**
+  String get localModelSettingsGpuLayers;
+
+  /// No description provided for @localModelSettingsGpuLayersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Layers on GPU (0 = auto)'**
+  String get localModelSettingsGpuLayersDesc;
+
+  /// No description provided for @localModelSettingsGeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'Generation'**
+  String get localModelSettingsGeneration;
+
+  /// No description provided for @localModelSettingsTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature'**
+  String get localModelSettingsTemperature;
+
+  /// No description provided for @localModelSettingsTemperatureDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Control response randomness'**
+  String get localModelSettingsTemperatureDesc;
+
+  /// No description provided for @localModelSettingsTopP.
+  ///
+  /// In en, this message translates to:
+  /// **'Top P'**
+  String get localModelSettingsTopP;
+
+  /// No description provided for @localModelSettingsTopPDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Cumulative probability for tokens'**
+  String get localModelSettingsTopPDesc;
+
+  /// No description provided for @localModelSettingsTopK.
+  ///
+  /// In en, this message translates to:
+  /// **'Top K'**
+  String get localModelSettingsTopK;
+
+  /// No description provided for @localModelSettingsTopKDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of candidate tokens'**
+  String get localModelSettingsTopKDesc;
+
+  /// No description provided for @localModelSettingsRepeatPenalty.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat Penalty'**
+  String get localModelSettingsRepeatPenalty;
+
+  /// No description provided for @localModelSettingsRepeatPenaltyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce word repetition'**
+  String get localModelSettingsRepeatPenaltyDesc;
+
+  /// No description provided for @localModelSettingsSystemPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'System Prompt'**
+  String get localModelSettingsSystemPrompt;
+
+  /// No description provided for @localModelSettingsSystemPromptEn.
+  ///
+  /// In en, this message translates to:
+  /// **'System Prompt (English)'**
+  String get localModelSettingsSystemPromptEn;
+
+  /// No description provided for @localModelSettingsSystemPromptAr.
+  ///
+  /// In en, this message translates to:
+  /// **'System Prompt (Arabic)'**
+  String get localModelSettingsSystemPromptAr;
+
+  /// No description provided for @localModelSettingsStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage'**
+  String get localModelSettingsStorage;
+
+  /// No description provided for @localModelSettingsUsedSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Used Space'**
+  String get localModelSettingsUsedSpace;
+
+  /// No description provided for @localModelSettingsCleanup.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean Unused Files'**
+  String get localModelSettingsCleanup;
+
+  /// No description provided for @localModelSettingsCleanupDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete corrupted model files'**
+  String get localModelSettingsCleanupDesc;
+
+  /// No description provided for @localModelSettingsReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Settings'**
+  String get localModelSettingsReset;
+
+  /// No description provided for @localModelSettingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved'**
+  String get localModelSettingsSaved;
+
+  /// No description provided for @localModelSettingsCleaned.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleanup complete'**
+  String get localModelSettingsCleaned;
 }
 
 class _AppLocalizationsDelegate

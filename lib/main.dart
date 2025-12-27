@@ -58,46 +58,51 @@ bool _didEnsureSystemFonts = false; // one-time system fonts load when needed
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Load API configuration from external source
-  await ApiConfig.loadConfig();
-  print(ApiConfig.getDebugInfo());
-  
-  // Load environment variables (optional - .env file may not exist)
+  // تحسين الأداء: تقليل حجم الذاكرة المخصصة للصور
   try {
-    await dotenv.load(fileName: ".env");
-  } catch (e) {
-    // .env file not found or unreadable - continue with defaults
-    print('Note: .env file not found, using environment defaults');
-  }
+    PaintingBinding.instance.imageCache.maximumSize = 100; // تقليل من 200
+    PaintingBinding.instance.imageCache.maximumSizeBytes = 32 << 20; // ~32MB بدلاً من 48MB
+  } catch (_) {}
   
-  // Initialize Firebase (non-blocking)
+  // تحميل الإعدادات بشكل متوازي لتسريع البدء
+  await Future.wait([
+    ApiConfig.loadConfig(),
+    _loadEnvSafe(),
+    SandboxPathResolver.init(),
+  ]);
+  
+  // Initialize Firebase (non-blocking) - لا ننتظر
   Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   ).then((_) {
-    print('✅ Firebase initialized');
+    debugPrint('✅ Firebase initialized');
   }).catchError((e) {
-    print('⚠️ Firebase init error: $e');
+    debugPrint('⚠️ Firebase init error: $e');
   });
-  // Trim Flutter global image cache to reduce memory pressure from large images
-  try {
-    PaintingBinding.instance.imageCache.maximumSize = 200;
-    PaintingBinding.instance.imageCache.maximumSizeBytes = 48 << 20; // ~48MB
-  } catch (_) {}
-  // Desktop (Windows) window setup: hide native title bar for custom Flutter bar
-  await _initDesktopWindow();
-  // Avoid preloading all system fonts at launch (huge memory on desktop)
-  // Debug logging and global error handlers were enabled previously for diagnosis.
-  // They are commented out now per request to reduce log noise.
-  // FlutterError.onError = (FlutterErrorDetails details) { ... };
-  // WidgetsBinding.instance.platformDispatcher.onError = (Object error, StackTrace stack) { ... };
-  // logging.Logger.root.level = logging.Level.ALL;
-  // logging.Logger.root.onRecord.listen((rec) { ... });
-  // Cache current Documents directory to fix sandboxed absolute paths on iOS
-  await SandboxPathResolver.init();
-  // Enable edge-to-edge to allow content under system bars (Android)
+  
+  // Desktop window setup (non-blocking on mobile)
+  _initDesktopWindow();
+  
+  // Enable edge-to-edge for modern Android look
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  // Start app (no extra guarded zone logging)
+  
+  // تحسين: تعيين ألوان شريط النظام
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarDividerColor: Colors.transparent,
+  ));
+  
   runApp(const MyApp());
+}
+
+/// تحميل ملف .env بشكل آمن
+Future<void> _loadEnvSafe() async {
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (_) {
+    // .env file not found - continue with defaults
+  }
 }
 
 Future<void> _initDesktopWindow() async {
