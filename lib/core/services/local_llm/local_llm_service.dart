@@ -138,8 +138,11 @@ class LocalLLMService extends ChangeNotifier {
     return _downloadProgressControllers[modelId]?.stream;
   }
 
-  /// تحميل نموذج
-  Future<void> downloadModel(LocalModelInfo modelInfo) async {
+  /// تحميل نموذج مع callback للتقدم
+  Future<void> downloadModel(
+    LocalModelInfo modelInfo, {
+    void Function(double progress, int receivedBytes, int totalBytes)? onProgress,
+  }) async {
     if (_downloadingModels[modelInfo.id] == true) return;
     if (_downloadedModels.containsKey(modelInfo.id)) return;
 
@@ -152,28 +155,63 @@ class LocalLLMService extends ChangeNotifier {
       final filePath = '${modelsDir.path}/${modelInfo.filename}';
       final file = File(filePath);
 
-      // إنشاء طلب HTTP
-      final request = http.Request('GET', Uri.parse(modelInfo.downloadUrl));
-      final response = await request.send();
+      debugPrint('📥 Starting download: ${modelInfo.name}');
+      debugPrint('📍 URL: ${modelInfo.downloadUrl}');
+      debugPrint('💾 Save to: $filePath');
+
+      // استخدام HttpClient للتعامل مع redirects بشكل صحيح
+      final httpClient = HttpClient();
+      httpClient.connectionTimeout = const Duration(seconds: 30);
+      
+      final request = await httpClient.getUrl(Uri.parse(modelInfo.downloadUrl));
+      request.followRedirects = true;
+      request.maxRedirects = 5;
+      
+      final response = await request.close();
 
       if (response.statusCode != 200) {
         throw Exception('Failed to download model: HTTP ${response.statusCode}');
       }
 
-      final contentLength = response.contentLength ?? modelInfo.sizeBytes;
+      final contentLength = response.contentLength > 0 
+          ? response.contentLength 
+          : modelInfo.sizeBytes;
       int receivedBytes = 0;
+
+      debugPrint('📦 Content length: $contentLength bytes');
 
       // فتح الملف للكتابة
       final sink = file.openWrite();
+      
+      // إرسال تقدم أولي
+      _downloadProgressControllers[modelInfo.id]?.add(0.0);
+      onProgress?.call(0.0, 0, contentLength);
 
-      await for (final chunk in response.stream) {
+      await for (final chunk in response) {
+        // التحقق من إلغاء التحميل
+        if (_downloadingModels[modelInfo.id] != true) {
+          await sink.close();
+          await file.delete();
+          throw Exception('Download cancelled');
+        }
+        
         sink.add(chunk);
         receivedBytes += chunk.length;
         final progress = receivedBytes / contentLength;
+        
         _downloadProgressControllers[modelInfo.id]?.add(progress);
+        onProgress?.call(progress, receivedBytes, contentLength);
+        
+        // طباعة التقدم كل 10%
+        if ((progress * 100).toInt() % 10 == 0) {
+          debugPrint('⬇️ Download progress: ${(progress * 100).toStringAsFixed(1)}%');
+        }
       }
 
       await sink.close();
+      httpClient.close();
+
+      debugPrint('✅ Download complete: ${modelInfo.name}');
 
       // إنشاء سجل النموذج المحمل
       final downloadedModel = DownloadedModel(
@@ -187,8 +225,9 @@ class LocalLLMService extends ChangeNotifier {
       await _save();
 
       _downloadProgressControllers[modelInfo.id]?.add(1.0);
+      onProgress?.call(1.0, contentLength, contentLength);
     } catch (e) {
-      debugPrint('Error downloading model: $e');
+      debugPrint('❌ Error downloading model: $e');
       _downloadProgressControllers[modelInfo.id]?.addError(e);
       rethrow;
     } finally {

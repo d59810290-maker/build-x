@@ -296,6 +296,10 @@ class HomePageController extends ChangeNotifier {
       final l10n = AppLocalizations.of(_context)!;
       if (warning == 'no_model') {
         showAppSnackBar(_context, message: l10n.homePagePleaseSelectModel, type: NotificationType.warning);
+      } else if (warning == 'no_local_model_downloaded') {
+        _showNoLocalModelDialog(isDownloaded: false);
+      } else if (warning == 'no_local_model_loaded') {
+        _showNoLocalModelDialog(isDownloaded: true);
       }
     };
     _viewModel.onScrollToBottom = () => _scrollToBottomSoon();
@@ -312,6 +316,45 @@ class HomePageController extends ChangeNotifier {
       _restoreMessageUiState();
       _scrollToBottom(animate: false);
     };
+  }
+
+  /// عرض حوار عند عدم وجود نموذج محلي
+  void _showNoLocalModelDialog({required bool isDownloaded}) {
+    showDialog(
+      context: _context,
+      builder: (context) => AlertDialog(
+        icon: Icon(
+          isDownloaded ? Icons.memory : Icons.download,
+          size: 48,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        title: Text(
+          isDownloaded ? 'النموذج غير محمل في الذاكرة' : 'لا يوجد نموذج محلي',
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          isDownloaded 
+              ? 'لديك نماذج محملة لكن يجب تشغيل أحدها أولاً.\nاذهب إلى صفحة النماذج المحلية واضغط على "تشغيل" لأحد النماذج.'
+              : 'يجب تنزيل نموذج محلي أولاً للتمكن من الدردشة.\nاذهب إلى صفحة النماذج المحلية وقم بتنزيل أحد النماذج المتاحة.',
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              // الانتقال إلى صفحة النماذج المحلية
+              Navigator.of(_context).pushNamed('/local-models');
+            },
+            icon: Icon(isDownloaded ? Icons.play_arrow : Icons.download),
+            label: Text(isDownloaded ? 'تشغيل نموذج' : 'تنزيل نموذج'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _initializeScrollController() {

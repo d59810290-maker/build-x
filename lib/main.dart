@@ -48,6 +48,7 @@ import 'core/services/notification_service.dart';
 import 'core/services/firebase_notification_service.dart';
 import 'core/config/api_config.dart';
 import 'shared/widgets/splash_screen.dart';
+import 'features/local_models/pages/local_models_page.dart';
 
 final RouteObserver<ModalRoute<dynamic>> routeObserver = RouteObserver<ModalRoute<dynamic>>();
 bool _didCheckUpdates = false; // one-time update check flag
@@ -368,6 +369,7 @@ class _MyAppState extends State<MyApp> {
                 routes: {
                   '/login': (context) => const LoginPage(),
                   '/home': (context) => _selectMainHome(),
+                  '/local-models': (context) => const LocalModelsPage(),
                 },
                 builder: (ctx, child) {
                   final bright = Theme.of(ctx).brightness;

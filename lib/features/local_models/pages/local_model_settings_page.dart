@@ -338,6 +338,89 @@ class _LocalModelSettingsPageState extends State<LocalModelSettingsPage> {
             ),
           ),
 
+          const SizedBox(height: 24),
+
+          // ملاحظة النسخة
+          _buildSectionHeader(context, 'حول هذه النسخة', LucideIcons.info),
+          const SizedBox(height: 8),
+          _buildCard(
+            context,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.cpu,
+                          color: colorScheme.primary,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'نسخة النماذج المحلية',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'هذه النسخة خاصة بالنماذج المحلية من Build X',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'ولا يُعد هذا التطبيق هو Build X الأصلي، إنما نسخة مخصصة للنماذج المحلية فقط.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: colorScheme.outlineVariant),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            LucideIcons.shield,
+                            size: 16,
+                            color: Colors.green,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'يعمل بدون إنترنت - خصوصية تامة',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
           const SizedBox(height: 32),
         ],
       ),

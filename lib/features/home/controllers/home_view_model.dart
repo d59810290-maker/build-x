@@ -198,6 +198,10 @@ class HomeViewModel extends ChangeNotifier {
     if (!result.success) {
       if (result.errorMessage == 'no_model') {
         onWarning?.call('no_model');
+      } else if (result.errorMessage == 'no_local_model_downloaded') {
+        onWarning?.call('no_local_model_downloaded');
+      } else if (result.errorMessage == 'no_local_model_loaded') {
+        onWarning?.call('no_local_model_loaded');
       } else if (result.errorMessage != 'empty_input') {
         onError?.call(result.errorMessage ?? 'unknown_error');
       }
@@ -230,6 +234,10 @@ class HomeViewModel extends ChangeNotifier {
     if (!result.success) {
       if (result.errorMessage == 'no_model') {
         onWarning?.call('no_model');
+      } else if (result.errorMessage == 'no_local_model_downloaded') {
+        onWarning?.call('no_local_model_downloaded');
+      } else if (result.errorMessage == 'no_local_model_loaded') {
+        onWarning?.call('no_local_model_loaded');
       } else {
         onError?.call(result.errorMessage ?? 'unknown_error');
       }

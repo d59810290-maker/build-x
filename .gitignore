@@ -64,3 +64,6 @@ internationalization.md
 # Environment variables
 .env
 build/web/assets/.env
+
+# APK builds
+*.apk

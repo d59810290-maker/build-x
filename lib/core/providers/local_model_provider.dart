@@ -144,21 +144,15 @@ class LocalModelProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // الاستماع لتقدم التحميل
-      final progressStream = _llmService.getDownloadProgress(modelId);
-      
-      // بدء التحميل
-      final downloadFuture = _llmService.downloadModel(modelInfo);
-
-      // تحديث التقدم
-      if (progressStream != null) {
-        await for (final progress in progressStream) {
+      // بدء التحميل مع callback للتقدم
+      await _llmService.downloadModel(
+        modelInfo,
+        onProgress: (progress, receivedBytes, totalBytes) {
           _downloadProgress[modelId] = progress;
           notifyListeners();
-        }
-      }
+        },
+      );
 
-      await downloadFuture;
       _downloadProgress.remove(modelId);
       notifyListeners();
     } catch (e) {

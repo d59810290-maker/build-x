@@ -1,94 +1,54 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
+/// إعدادات API - معطلة في نسخة النماذج المحلية
+/// هذه النسخة تعمل بالكامل محلياً بدون أي اتصال خارجي
 class ApiConfig {
   static String _apiUrl = "";
   static DateTime? _lastLoadTime;
-  static const Duration _cacheDuration = Duration(minutes: 30);
 
-  // رابط RAW من Gist - يحتوي على API URL الديناميكي
-  static const String configUrl =
-      "https://gist.githubusercontent.com/MMUU6699/f86a0eaee693eafc7867efbd8a1f05aa/raw/config.json";
-
-  /// جلب إعدادات API من Gist
+  /// تحميل الإعدادات - معطل في نسخة النماذج المحلية
   static Future<void> loadConfig() async {
-    try {
-      final loadTime = DateTime.now();
-      print("📡 [$loadTime] Loading config from: $configUrl");
-      final response = await http.get(Uri.parse(configUrl)).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          throw Exception('Config loading timeout');
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print("📦 [$loadTime] Config response received: ${response.body}");
-        final data = json.decode(response.body);
-        _apiUrl = (data["api_url"] ?? "").toString().trim();
-        _lastLoadTime = DateTime.now();
-        print("✅ [$_lastLoadTime] Successfully loaded API URL: $_apiUrl");
-        print("⏱️  Config loaded in ${DateTime.now().difference(loadTime).inMilliseconds}ms");
-      } else {
-        print("❌ Failed to load config: ${response.statusCode}");
-        print("Response body: ${response.body}");
-        _setDefaultUrl();
-      }
-    } catch (e) {
-      print("❌ Error loading config: $e");
-      print("Stack trace: ${StackTrace.current}");
-      _setDefaultUrl();
-    }
+    // نسخة النماذج المحلية لا تحتاج إلى API خارجي
+    _apiUrl = "";
+    _lastLoadTime = DateTime.now();
+    print("📱 Local Models Version - No external API needed");
   }
 
-  /// إعادة تحميل الإعدادات (يمكن استدعاؤها يدوياً)
+  /// إعادة تحميل الإعدادات
   static Future<void> reloadConfig() async {
     await loadConfig();
   }
 
-  /// الحصول على رابط API
+  /// الحصول على رابط API (فارغ دائماً في هذه النسخة)
   static String get apiUrl => _apiUrl;
 
-  /// تعيين رابط API مباشرة (للاختبار)
+  /// تعيين رابط API
   static set apiUrl(String url) {
     _apiUrl = url.trim();
     _lastLoadTime = DateTime.now();
   }
 
-  /// تعيين رابط افتراضي في حالة الفشل
-  static void _setDefaultUrl() {
-    _apiUrl = "";
-    _lastLoadTime = DateTime.now();
-    print("⚠ Using empty API URL as fallback");
-  }
-
-  /// التحقق من تحميل الرابط بنجاح
+  /// التحقق من تحميل الرابط
   static bool isConfigLoaded() {
-    return _apiUrl.isNotEmpty;
+    // في نسخة النماذج المحلية، نعتبر الإعدادات محملة دائماً
+    return true;
   }
 
   /// التحقق مما إذا كان يجب إعادة تحميل الإعدادات
   static bool shouldReload() {
-    if (_lastLoadTime == null) return true;
-    final timeSinceLastLoad = DateTime.now().difference(_lastLoadTime!);
-    return timeSinceLastLoad > _cacheDuration;
+    return false; // لا حاجة لإعادة التحميل
   }
 
   /// الحصول على وقت آخر تحميل
   static DateTime? get lastLoadTime => _lastLoadTime;
 
-  /// الحصول على معلومات تفصيلية عن حالة التحميل (للـ debugging)
+  /// الحصول على معلومات تفصيلية
   static String getDebugInfo() {
     return '''
 ═══════════════════════════════════════════════════════════
-🔍 API Config Debug Info
+🔍 Local Models Version - API Config
 ═══════════════════════════════════════════════════════════
-📍 Config URL: $configUrl
-✅ Current API URL: $_apiUrl
-📅 Last Load Time: $_lastLoadTime
-⏱️  Cache Duration: ${_cacheDuration.inMinutes} minutes
-🔄 Should Reload: ${shouldReload()}
-💾 Is Loaded: ${isConfigLoaded()}
+📱 Mode: Local Models Only
+🔒 External API: Disabled
+✅ Status: Ready for local inference
 ═══════════════════════════════════════════════════════════
 ''';
   }

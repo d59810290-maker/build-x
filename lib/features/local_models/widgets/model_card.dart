@@ -147,18 +147,74 @@ class ModelCard extends StatelessWidget {
               // شريط التقدم أثناء التحميل
               if (isDownloading) ...[
                 const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: downloadProgress,
-                    minHeight: 6,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${(downloadProgress * 100).toStringAsFixed(1)}%',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.primary,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  value: downloadProgress > 0 ? downloadProgress : null,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'جاري التنزيل...',
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            '${(downloadProgress * 100).toStringAsFixed(1)}%',
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: downloadProgress > 0 ? downloadProgress : null,
+                          minHeight: 8,
+                          backgroundColor: colorScheme.surfaceContainerHighest,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _formatBytes((downloadProgress * model.sizeBytes).toInt()),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.outline,
+                            ),
+                          ),
+                          Text(
+                            model.displaySize,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.outline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -339,5 +395,12 @@ class ModelCard extends StatelessWidget {
       default:
         return colorScheme.secondary;
     }
+  }
+
+  String _formatBytes(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB';
   }
 }

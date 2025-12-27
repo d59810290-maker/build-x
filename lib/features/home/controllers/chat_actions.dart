@@ -160,14 +160,33 @@ class ChatActions {
     final settings = contextProvider.read<SettingsProvider>();
     final assistant = contextProvider.read<AssistantProvider>().currentAssistant;
     final assistantId = assistant?.id;
+    
+    // التحقق من وجود نموذج محلي محمل أولاً
+    final localApi = LocalApiService.instance;
+    final localModelProvider = contextProvider.read<LocalModelProvider>();
+    
+    // إذا لم يكن هناك نموذج محلي محمل ولا نماذج محملة على الإطلاق
+    if (!localApi.isAvailable && localModelProvider.downloadedModels.isEmpty) {
+      return ChatActionResult(
+        success: false, 
+        errorMessage: 'no_local_model_downloaded',
+      );
+    }
+    
+    // إذا كان هناك نماذج محملة لكن لم يتم تحميل أي منها في الذاكرة
+    if (!localApi.isAvailable && localModelProvider.downloadedModels.isNotEmpty) {
+      return ChatActionResult(
+        success: false, 
+        errorMessage: 'no_local_model_loaded',
+      );
+    }
+    
     final modelConfig =
         messageGenerationService.getModelConfig(settings, assistant);
 
-    if (modelConfig.providerKey == null || modelConfig.modelId == null) {
-      return ChatActionResult.noModel();
-    }
-    final providerKey = modelConfig.providerKey!;
-    final modelId = modelConfig.modelId!;
+    // استخدام النموذج المحلي كـ fallback
+    final providerKey = modelConfig.providerKey ?? 'local';
+    final modelId = modelConfig.modelId ?? localApi.loadedModelId ?? 'local';
 
     // Create user message
     final userMessage = await messageGenerationService.createUserMessage(
