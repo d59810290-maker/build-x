@@ -447,36 +447,26 @@ class ChatActions {
   // ============================================================================
 
   /// Execute generation with the given context.
+  /// يستخدم النموذج المحلي فقط - لا يتصل بأي API خارجي
   Future<void> _executeGeneration(stream_ctrl.GenerationContext ctx) async {
     final state = stream_ctrl.StreamingState(ctx);
     final assistant = ctx.assistant;
     final conversationId = state.conversationId;
 
     try {
-      // التحقق من وجود نموذج محلي محمل
+      // استخدام النموذج المحلي فقط
       final localApi = LocalApiService.instance;
-      final useLocalModel = localApi.isAvailable;
       
-      Stream<String> stream;
-      
-      if (useLocalModel) {
-        // استخدام النموذج المحلي
-        final prompt = ctx.apiMessages.isNotEmpty ? ctx.apiMessages.last['content'] ?? '' : '';
-        stream = await localApi.sendMessageStream(
-          prompt: prompt,
-          messages: ctx.apiMessages,
-          systemPrompt: assistant?.systemPrompt,
-        );
-      } else {
-        // استخدام API الخارجي
-        final streamFuture = ChatApiService.sendMessageStream(
-          config: ctx.config,
-          modelId: ctx.modelId,
-          prompt: ctx.apiMessages.isNotEmpty ? ctx.apiMessages.last['content'] ?? '' : '',
-          messages: ctx.apiMessages,
-        );
-        stream = await streamFuture;
+      if (!localApi.isAvailable) {
+        throw Exception('لم يتم تحميل نموذج محلي. يرجى تحميل نموذج من صفحة النماذج المحلية أولاً.\n\nNo local model loaded. Please download and load a model from Local Models page first.');
       }
+      
+      final prompt = ctx.apiMessages.isNotEmpty ? ctx.apiMessages.last['content'] ?? '' : '';
+      final stream = await localApi.sendMessageStream(
+        prompt: prompt,
+        messages: ctx.apiMessages,
+        systemPrompt: assistant?.systemPrompt,
+      );
 
       await _conversationStreams[conversationId]?.cancel();
       final sub = stream.listen(

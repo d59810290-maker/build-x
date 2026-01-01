@@ -134,30 +134,50 @@ class LocalModelProvider extends ChangeNotifier {
   /// الحصول على خطأ التحميل
   String? getDownloadError(String modelId) => _downloadErrors[modelId];
 
-  /// تحميل نموذج
-  Future<void> downloadModel(String modelId) async {
+  // حالة التحميل الحالية
+  final Map<String, String> _downloadStatus = {};
+  String getDownloadStatus(String modelId) => _downloadStatus[modelId] ?? '';
+
+  /// تحميل نموذج مع إشعارات التقدم
+  Future<void> downloadModel(String modelId, {
+    void Function(String status)? onStatusChange,
+  }) async {
     final modelInfo = AvailableModels.findById(modelId);
     if (modelInfo == null) return;
 
     _downloadProgress[modelId] = 0.0;
     _downloadErrors[modelId] = null;
+    _downloadStatus[modelId] = 'جاري البدء... / Starting...';
     notifyListeners();
 
     try {
-      // بدء التحميل مع callback للتقدم
+      // بدء التحميل مع callback للتقدم والحالة
       await _llmService.downloadModel(
         modelInfo,
         onProgress: (progress, receivedBytes, totalBytes) {
           _downloadProgress[modelId] = progress;
           notifyListeners();
         },
+        onStatusChange: (status) {
+          _downloadStatus[modelId] = status;
+          onStatusChange?.call(status);
+          notifyListeners();
+        },
       );
 
       _downloadProgress.remove(modelId);
+      _downloadStatus[modelId] = 'اكتمل! ✅ / Complete!';
       notifyListeners();
+      
+      // مسح الحالة بعد ثانيتين
+      Future.delayed(const Duration(seconds: 2), () {
+        _downloadStatus.remove(modelId);
+        notifyListeners();
+      });
     } catch (e) {
       _downloadErrors[modelId] = e.toString();
       _downloadProgress.remove(modelId);
+      _downloadStatus[modelId] = 'فشل: $e';
       notifyListeners();
       rethrow;
     }

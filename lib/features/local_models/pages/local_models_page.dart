@@ -216,11 +216,13 @@ class _LocalModelsPageState extends State<LocalModelsPage> {
           isSelected: provider.selectedModelId == model.id,
           isLoaded: provider.loadedModelId == model.id,
           downloadProgress: provider.getDownloadProgress(model.id),
+          downloadStatus: provider.getDownloadStatus(model.id),
           onDownload: () => _downloadModel(context, provider, model),
           onDelete: () => _deleteModel(context, provider, model),
           onSelect: () => provider.selectModel(model.id),
           onLoad: () => _loadModel(context, provider, model),
           onUnload: () => provider.unloadModel(),
+          onCancelDownload: () => provider.cancelDownload(model.id),
         );
       },
     );

@@ -10,11 +10,13 @@ class ModelCard extends StatelessWidget {
   final bool isSelected;
   final bool isLoaded;
   final double downloadProgress;
+  final String downloadStatus;
   final VoidCallback onDownload;
   final VoidCallback onDelete;
   final VoidCallback onSelect;
   final VoidCallback onLoad;
   final VoidCallback onUnload;
+  final VoidCallback? onCancelDownload;
 
   const ModelCard({
     super.key,
@@ -24,11 +26,13 @@ class ModelCard extends StatelessWidget {
     required this.isSelected,
     required this.isLoaded,
     required this.downloadProgress,
+    this.downloadStatus = '',
     required this.onDownload,
     required this.onDelete,
     required this.onSelect,
     required this.onLoad,
     required this.onUnload,
+    this.onCancelDownload,
   });
 
   @override
@@ -158,31 +162,44 @@ class ModelCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  value: downloadProgress > 0 ? downloadProgress : null,
+                          Expanded(
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    value: downloadProgress > 0 ? downloadProgress : null,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'جاري التنزيل...',
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  color: colorScheme.primary,
-                                  fontWeight: FontWeight.w500,
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    downloadStatus.isNotEmpty ? downloadStatus : 'جاري التنزيل...',
+                                    style: theme.textTheme.labelMedium?.copyWith(
+                                      color: colorScheme.primary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                          Text(
-                            '${(downloadProgress * 100).toStringAsFixed(1)}%',
-                            style: theme.textTheme.labelLarge?.copyWith(
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
                               color: colorScheme.primary,
-                              fontWeight: FontWeight.bold,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '${(downloadProgress * 100).toStringAsFixed(0)}%',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -192,11 +209,11 @@ class ModelCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                         child: LinearProgressIndicator(
                           value: downloadProgress > 0 ? downloadProgress : null,
-                          minHeight: 8,
+                          minHeight: 10,
                           backgroundColor: colorScheme.surfaceContainerHighest,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -207,7 +224,7 @@ class ModelCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            model.displaySize,
+                            'من ${model.displaySize}',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: colorScheme.outline,
                             ),
@@ -256,9 +273,12 @@ class ModelCard extends StatelessWidget {
                   ] else if (isDownloading) ...[
                     // زر الإلغاء
                     OutlinedButton.icon(
-                      onPressed: () {}, // TODO: إضافة إلغاء التحميل
+                      onPressed: onCancelDownload,
                       icon: const Icon(LucideIcons.x),
                       label: const Text('إلغاء'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: colorScheme.error,
+                      ),
                     ),
                   ] else ...[
                     // زر التنزيل

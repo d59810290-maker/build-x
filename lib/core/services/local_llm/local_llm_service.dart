@@ -138,10 +138,11 @@ class LocalLLMService extends ChangeNotifier {
     return _downloadProgressControllers[modelId]?.stream;
   }
 
-  /// تحميل نموذج مع callback للتقدم
+  /// تحميل نموذج مع callback للتقدم وإشعارات
   Future<void> downloadModel(
     LocalModelInfo modelInfo, {
     void Function(double progress, int receivedBytes, int totalBytes)? onProgress,
+    void Function(String status)? onStatusChange,
   }) async {
     if (_downloadingModels[modelInfo.id] == true) return;
     if (_downloadedModels.containsKey(modelInfo.id)) return;
@@ -158,27 +159,33 @@ class LocalLLMService extends ChangeNotifier {
       debugPrint('📥 Starting download: ${modelInfo.name}');
       debugPrint('📍 URL: ${modelInfo.downloadUrl}');
       debugPrint('💾 Save to: $filePath');
+      onStatusChange?.call('جاري بدء التحميل... / Starting download...');
 
       // استخدام HttpClient للتعامل مع redirects بشكل صحيح
       final httpClient = HttpClient();
-      httpClient.connectionTimeout = const Duration(seconds: 30);
+      httpClient.connectionTimeout = const Duration(seconds: 60);
+      httpClient.idleTimeout = const Duration(minutes: 5);
       
       final request = await httpClient.getUrl(Uri.parse(modelInfo.downloadUrl));
       request.followRedirects = true;
-      request.maxRedirects = 5;
+      request.maxRedirects = 10;
+      // إضافة User-Agent لتجنب حظر بعض الخوادم
+      request.headers.set('User-Agent', 'BuildX-App/1.0');
       
       final response = await request.close();
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to download model: HTTP ${response.statusCode}');
+        throw Exception('فشل تحميل النموذج: HTTP ${response.statusCode}\nFailed to download model: HTTP ${response.statusCode}');
       }
 
       final contentLength = response.contentLength > 0 
           ? response.contentLength 
           : modelInfo.sizeBytes;
       int receivedBytes = 0;
+      int lastReportedPercent = -1;
 
       debugPrint('📦 Content length: $contentLength bytes');
+      onStatusChange?.call('جاري التحميل... / Downloading...');
 
       // فتح الملف للكتابة
       final sink = file.openWrite();
@@ -191,20 +198,25 @@ class LocalLLMService extends ChangeNotifier {
         // التحقق من إلغاء التحميل
         if (_downloadingModels[modelInfo.id] != true) {
           await sink.close();
-          await file.delete();
-          throw Exception('Download cancelled');
+          try { await file.delete(); } catch (_) {}
+          throw Exception('تم إلغاء التحميل / Download cancelled');
         }
         
         sink.add(chunk);
         receivedBytes += chunk.length;
         final progress = receivedBytes / contentLength;
+        final currentPercent = (progress * 100).toInt();
         
         _downloadProgressControllers[modelInfo.id]?.add(progress);
         onProgress?.call(progress, receivedBytes, contentLength);
         
-        // طباعة التقدم كل 10%
-        if ((progress * 100).toInt() % 10 == 0) {
-          debugPrint('⬇️ Download progress: ${(progress * 100).toStringAsFixed(1)}%');
+        // إرسال إشعار كل 5%
+        if (currentPercent != lastReportedPercent && currentPercent % 5 == 0) {
+          lastReportedPercent = currentPercent;
+          final downloadedMB = (receivedBytes / (1024 * 1024)).toStringAsFixed(1);
+          final totalMB = (contentLength / (1024 * 1024)).toStringAsFixed(1);
+          debugPrint('⬇️ Download progress: $currentPercent% ($downloadedMB MB / $totalMB MB)');
+          onStatusChange?.call('$currentPercent% - $downloadedMB MB / $totalMB MB');
         }
       }
 
@@ -212,6 +224,7 @@ class LocalLLMService extends ChangeNotifier {
       httpClient.close();
 
       debugPrint('✅ Download complete: ${modelInfo.name}');
+      onStatusChange?.call('اكتمل التحميل! ✅ / Download complete!');
 
       // إنشاء سجل النموذج المحمل
       final downloadedModel = DownloadedModel(
@@ -228,6 +241,7 @@ class LocalLLMService extends ChangeNotifier {
       onProgress?.call(1.0, contentLength, contentLength);
     } catch (e) {
       debugPrint('❌ Error downloading model: $e');
+      onStatusChange?.call('فشل التحميل: $e');
       _downloadProgressControllers[modelInfo.id]?.addError(e);
       rethrow;
     } finally {

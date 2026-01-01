@@ -15,6 +15,7 @@ import '../../../core/providers/settings_provider.dart';
 import '../../../core/providers/assistant_provider.dart';
 import '../../../core/providers/quick_phrase_provider.dart';
 import '../../../core/providers/instruction_injection_provider.dart';
+import '../../../core/providers/local_model_provider.dart';
 import '../../../core/models/quick_phrase.dart';
 import '../../../core/models/chat_message.dart';
 import '../../../core/services/api/chat_api_service.dart';
@@ -44,6 +45,7 @@ import '../widgets/scroll_nav_buttons.dart';
 import '../widgets/selection_toolbar.dart';
 import '../widgets/message_list_view.dart';
 import '../widgets/chat_input_section.dart';
+import '../widgets/no_model_banner.dart';
 import '../utils/model_display_helper.dart';
 import '../controllers/home_page_controller.dart';
 import 'home_mobile_layout.dart';
@@ -248,6 +250,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           padding: EdgeInsets.only(top: kToolbarHeight + MediaQuery.of(context).padding.top),
           child: Column(
             children: [
+              // بانر عدم وجود نموذج محمل
+              Consumer<LocalModelProvider>(
+                builder: (context, localProvider, _) {
+                  if (!localProvider.isModelLoaded && _controller.messages.isEmpty) {
+                    return const NoModelBanner();
+                  }
+                  if (!localProvider.isModelLoaded && _controller.messages.isNotEmpty) {
+                    return const NoModelMiniBanner();
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
               Expanded(
                 child: Builder(
                   builder: (context) {
